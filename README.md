@@ -13,9 +13,12 @@ Awesome tooltips.
 $ npm install react-portal-tooltip
 ```
 
-**Warning** The latest version on npm is compatible with React 15. Corresponding versions for older versions of React:
+**Warning** The versions 2.x on npm are compatible with React 16. Corresponding versions for older versions of React:
 
 ```shell
+# For react v15
+$ npm install react-portal-tooltip@1
+
 # For react 0.14
 $ npm install react-portal-tooltip@0.14
 
@@ -65,9 +68,39 @@ class MyComponent extends React.Component {
 * `position`: top, right, bottom or left. Default to right
 * `arrow`: center, right, left, top or bottom (depending on the position prop). No arrow when the prop is not sepecified
 * `tooltipTimeout`: timeout for the tooltip fade out in milliseconds. Default to 500
-* `parent`: the tooltip will be placed next to this element
+* `parent`: the tooltip will be placed next to this element. Can be the id of the parent or the ref (see example below)
 * `group`: string, necessary if you want several independent tooltips
 * `style`: object, allows customizing the tooltip. Checkout the [example](https://github.com/romainberger/react-portal-tooltip/blob/master/example/src/style.js) for details.
+
+### Parent prop
+
+You can use an id or a ref to reference the parent:
+
+#### id
+
+```javascript
+<div id="hoverMe" onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
+    Hover me!!!
+</div>
+<ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent="#hoverMe">
+    <div>
+        <p>This is the content of the tooltip</p>
+    </div>
+</ToolTip>
+```
+
+#### ref
+
+```javascript
+<div ref={(element) => { this.element = element }} onMouseEnter={this.showTooltip} onMouseLeave={this.hideTooltip}>
+    Hover me!!!
+</div>
+<ToolTip active={this.state.isTooltipActive} position="top" arrow="center" parent={this.element}>
+    <div>
+        <p>This is the content of the tooltip</p>
+    </div>
+</ToolTip>
+```
 
 ## Development
 

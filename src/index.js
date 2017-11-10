@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import ReactDOM, {unstable_renderSubtreeIntoContainer as renderSubtreeIntoContainer} from 'react-dom'
 import assign from 'object-assign'
 
+let FG_SIZE = 8
+let BG_SIZE = 9
+
 class Card extends React.Component {
   static propTypes = {
     active: PropTypes.bool,
@@ -76,12 +79,10 @@ class Card extends React.Component {
     let arrowStyle = assign(this.defaultArrowStyle, this.props.style.arrowStyle)
     let bgBorderColor = arrowStyle.borderColor ? arrowStyle.borderColor : 'transparent'
 
-    let fgSize = 8
-    let bgSize = 9
     let fgColorBorder = `10px solid ${arrowStyle.color}`
-    let fgTransBorder = `${fgSize}px solid transparent`
+    let fgTransBorder = `${FG_SIZE}px solid transparent`
     let bgColorBorder = `11px solid ${bgBorderColor}`
-    let bgTransBorder = `${bgSize}px solid transparent`
+    let bgTransBorder = `${BG_SIZE}px solid transparent`
 
     let {position, arrow} = this.props
 
@@ -145,16 +146,16 @@ class Card extends React.Component {
 
       if (arrow === 'right') {
         fgStyle.left = null
-        fgStyle.right = this.margin + 1 - fgSize
+        fgStyle.right = this.margin + 1 - FG_SIZE
         fgStyle.marginLeft = 0
         bgStyle.left = null
-        bgStyle.right = this.margin - fgSize
+        bgStyle.right = this.margin - FG_SIZE
         bgStyle.marginLeft = 0
       }
       if (arrow === 'left') {
-        fgStyle.left = this.margin + 1 - fgSize
+        fgStyle.left = this.margin + 1 - FG_SIZE
         fgStyle.marginLeft = 0
-        bgStyle.left = this.margin - fgSize
+        bgStyle.left = this.margin - FG_SIZE
         bgStyle.marginLeft = 0
       }
     }
@@ -165,125 +166,6 @@ class Card extends React.Component {
       fgStyle: this.mergeStyle(fgStyle, propsArrowStyle),
       bgStyle: this.mergeStyle(bgStyle, propsArrowStyle)
     }
-  }
-  getStyle(position, arrow) {
-    let parent = this.props.parentEl
-    let tooltipPosition = parent.getBoundingClientRect()
-    let scrollY = (window.scrollY !== undefined) ? window.scrollY : window.pageYOffset
-    let scrollX = (window.scrollX !== undefined) ? window.scrollX : window.pageXOffset
-    let top = scrollY + tooltipPosition.top
-    let left = scrollX + tooltipPosition.left
-    let style = {}
-
-    switch (position) {
-      case 'left':
-        style.top = (top + parent.offsetHeight / 2) - ((this.state.height) / 2)
-        style.left = left - this.state.width - this.margin
-
-        if (arrow) {
-          switch (arrow) {
-            case 'top':
-              style.top = (top + parent.offsetHeight / 2) - this.margin
-              style.left = left - this.state.width - this.margin
-              break
-
-            case 'bottom':
-              style.top = (top + parent.offsetHeight / 2) - this.state.height + this.margin
-              style.left = left - this.state.width - this.margin
-              break
-          }
-        }
-        break
-
-      case 'right':
-        style.top = (top + parent.offsetHeight / 2) - ((this.state.height) / 2)
-        style.left = left + parent.offsetWidth + this.margin
-
-        if (arrow) {
-          switch (arrow) {
-            case 'top':
-              style.top = (top + parent.offsetHeight / 2) - this.margin
-              style.left = left + parent.offsetWidth + this.margin
-              break
-
-            case 'bottom':
-              style.top = (top + parent.offsetHeight / 2) - this.state.height + this.margin
-              style.left = left + parent.offsetWidth + this.margin
-              break
-          }
-        }
-        break
-
-      case 'top':
-        style.left = left - (this.state.width / 2) + parent.offsetWidth / 2
-        style.top = top - this.state.height - this.margin
-
-        if (arrow) {
-          switch(arrow) {
-            case 'right':
-              style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin
-              style.top = top - this.state.height - this.margin
-              break
-
-            case 'left':
-              style.left = left + parent.offsetWidth / 2 - this.margin
-              style.top = top - this.state.height - this.margin
-              break
-          }
-        }
-        break
-
-      case 'bottom':
-        style.left = left - (this.state.width / 2) + parent.offsetWidth / 2
-        style.top = top + parent.offsetHeight + this.margin
-
-        if (arrow){
-          switch (arrow) {
-            case 'right':
-              style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin
-              style.top = top + parent.offsetHeight + this.margin
-              break
-
-            case 'left':
-              style.left = left + parent.offsetWidth / 2 - this.margin
-              style.top = top + parent.offsetHeight + this.margin
-              break
-          }
-        }
-        break
-    }
-
-    return style
-  }
-  checkWindowPosition(style, arrowStyle) {
-    if (this.props.position === 'top' || this.props.position === 'bottom') {
-      if (style.left < 0) {
-        let offset = style.left
-        style.left = this.margin
-        arrowStyle.fgStyle.marginLeft += offset
-        arrowStyle.bgStyle.marginLeft += offset
-
-        if (this.props.arrow === 'right') {
-          arrowStyle.fgStyle.marginRight = -(offset - this.margin + 10)
-          arrowStyle.bgStyle.marginRight = -(offset - this.margin + 10)
-        }
-        else {
-          arrowStyle.fgStyle.marginLeft += offset - this.margin
-          arrowStyle.bgStyle.marginLeft += offset - this.margin
-        }
-      }
-      else {
-        let rightOffset = style.left + this.state.width - window.innerWidth
-        if (rightOffset > 0) {
-          let originalLeft = style.left
-          style.left = window.innerWidth - this.state.width - this.margin
-          arrowStyle.fgStyle.marginLeft += originalLeft - style.left
-          arrowStyle.bgStyle.marginLeft += originalLeft - style.left
-        }
-      }
-    }
-
-    return {style, arrowStyle}
   }
   mergeStyle(style, theme) {
     if (theme) {
@@ -303,93 +185,63 @@ class Card extends React.Component {
     let left = scrollX + tooltipPosition.left
     let style = {}
 
-    switch (position) {
-      case 'left':
-        style.top = (top + parent.offsetHeight / 2) - ((this.state.height) / 2)
+    const stylesFromPosition = {
+      left: () => {
+        style.top = top + parent.offsetHeight / 2 - this.state.height / 2
         style.left = left - this.state.width - this.margin
-
-        if (arrow) {
-          switch (arrow) {
-            case 'top':
-              style.top = (top + parent.offsetHeight / 2) - this.margin
-              style.left = left - this.state.width - this.margin
-              break
-
-            case 'bottom':
-              style.top = (top + parent.offsetHeight / 2) - this.state.height + this.margin
-              style.left = left - this.state.width - this.margin
-              break
-          }
-        }
-        break
-
-      case 'right':
-        style.top = (top + parent.offsetHeight / 2) - ((this.state.height) / 2)
+      },
+      right: () => {
+        style.top = top + parent.offsetHeight / 2 - this.state.height / 2
         style.left = left + parent.offsetWidth + this.margin
-
-        if (arrow) {
-          switch (arrow) {
-            case 'top':
-              style.top = (top + parent.offsetHeight / 2) - this.margin
-              style.left = left + parent.offsetWidth + this.margin
-              break
-
-            case 'bottom':
-              style.top = (top + parent.offsetHeight / 2) - this.state.height + this.margin
-              style.left = left + parent.offsetWidth + this.margin
-              break
-          }
-        }
-        break
-
-      case 'top':
-        style.left = left - (this.state.width / 2) + parent.offsetWidth / 2
+      },
+      top: () => {
+        style.left = left - this.state.width / 2 + parent.offsetWidth / 2
         style.top = top - this.state.height - this.margin
-
-        if (arrow) {
-          switch(arrow) {
-            case 'right':
-              style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin
-              style.top = top - this.state.height - this.margin
-              break
-
-            case 'left':
-              style.left = left + parent.offsetWidth / 2 - this.margin
-              style.top = top - this.state.height - this.margin
-              break
-          }
-        }
-        break
-
-      case 'bottom':
-        style.left = left - (this.state.width / 2) + parent.offsetWidth / 2
+      },
+      bottom: () => {
+        style.left = left - this.state.width / 2 + parent.offsetWidth / 2
         style.top = top + parent.offsetHeight + this.margin
-
-        if (arrow){
-          switch (arrow) {
-            case 'right':
-              style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin
-              style.top = top + parent.offsetHeight + this.margin
-              break
-
-            case 'left':
-              style.left = left + parent.offsetWidth / 2 - this.margin
-              style.top = top + parent.offsetHeight + this.margin
-              break
-          }
-        }
-        break
+      },
     }
+
+    const stylesFromArrow = {
+      left: () => {
+        style.left = left + parent.offsetWidth / 2 - this.margin
+      },
+      right: () => {
+        style.left = left - this.state.width + parent.offsetWidth / 2 + this.margin
+      },
+      top: () => {
+        style.top = top + parent.offsetHeight / 2 - this.margin
+      },
+      bottom: () => {
+        style.top = top + parent.offsetHeight / 2 - this.state.height + this.margin
+      },
+    }
+
+    executeFunctionIfExist(stylesFromPosition, position)
+    executeFunctionIfExist(stylesFromArrow, arrow)
 
     return style
   }
   checkWindowPosition(style, arrowStyle) {
     if (this.props.position === 'top' || this.props.position === 'bottom') {
       if (style.left < 0) {
-        let offset = style.left
+        const parent = this.props.parentEl
+        if (parent && this.tooltipref) {          
+          const tooltipWidth = this.tooltipref.offsetWidth
+          let bgStyleRight = arrowStyle.bgStyle.right
+          // If it's arrow center
+          if (!bgStyleRight) {
+            bgStyleRight = (tooltipWidth / 2) - (BG_SIZE / 2)
+          }
+          const newBgRight = Math.round(bgStyleRight - style.left + this.margin)
+          arrowStyle = Object.assign({}, arrowStyle, {
+            bgStyle: Object.assign({}, arrowStyle.bgStyle, {right: newBgRight, left: null}),
+            fgStyle: Object.assign({}, arrowStyle.fgStyle, {right: newBgRight + 1, left: null})
+          })
+        }
         style.left = this.margin
-        arrowStyle.fgStyle.marginLeft += offset
-        arrowStyle.bgStyle.marginLeft += offset
       }
       else {
         let rightOffset = style.left + this.state.width - window.innerWidth
@@ -401,7 +253,6 @@ class Card extends React.Component {
         }
       }
     }
-
     return {style, arrowStyle}
   }
   handleMouseEnter() {
@@ -429,7 +280,7 @@ class Card extends React.Component {
     let {style, arrowStyle} = this.checkWindowPosition(this.getGlobalStyle(), this.getArrowStyle())
 
     return (
-      <div style={style} onMouseEnter={::this.handleMouseEnter} onMouseLeave={::this.handleMouseLeave}>
+      <div ref={(node) => this.tooltipref = node} style={style} onMouseEnter={::this.handleMouseEnter} onMouseLeave={::this.handleMouseLeave}>
         {this.props.arrow ? (
           <div>
             <span style={arrowStyle.fgStyle}/>
@@ -447,7 +298,10 @@ var portalNodes = {}
 
 export default class ToolTip extends React.Component {
   static propTypes = {
-    parent: PropTypes.string.isRequired,
+    parent: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.object
+    ]).isRequired,
     active: PropTypes.bool,
     group: PropTypes.string,
     tooltipTimeout: PropTypes.number
@@ -506,7 +360,7 @@ export default class ToolTip extends React.Component {
       this.createPortal()
     }
     let {parent, ...other} = props
-    let parentEl = document.querySelector(parent)
+    let parentEl = typeof parent === 'string' ? document.querySelector(parent) : parent
     renderSubtreeIntoContainer(this, <Card parentEl={parentEl} {...other}/>, portalNodes[this.props.group].node)
   }
   shouldComponentUpdate() {
@@ -514,5 +368,11 @@ export default class ToolTip extends React.Component {
   }
   render() {
     return null
+  }
+}
+
+const executeFunctionIfExist = (object, key) => {
+  if (Object.prototype.hasOwnProperty.call(object, key)){
+    object[key]()
   }
 }
